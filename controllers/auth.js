@@ -1,6 +1,9 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
+const { v4: uuidv4 } = require("uuid");
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const User = require("../models/user");
 
@@ -17,10 +20,22 @@ const register = async (req, res) => {
   const hashPassword = await bcrypt.hash(password, 10);
   const avatarURL = gravatar.url(email);
 
+  const verificationToken = uuidv4();
+
   const newUser = await User.create({
     email,
     password: hashPassword,
     avatarURL,
+    verificationToken,
+  });
+
+  const verifyLink = `${process.env.BASE_URL}/api/users/verify/${verificationToken}`;
+
+  await sgMail.send({
+    to: email,
+    from: "gdutu94@gmai.com",
+    subject: "Please verify your email",
+    html: `<a href="${verifyLink}">Click here to verify your email</a>`,
   });
 
   res.status(201).json({

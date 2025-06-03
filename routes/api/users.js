@@ -11,6 +11,8 @@ const authMiddleware = require("../../middlewares/auth");
 
 const upload = require("../../middlewares/upload");
 const { updateAvatar } = require("../../controllers/users");
+const { resendVerificationEmail } = require("../../controllers/users");
+const { verifyEmail } = require("../../controllers/users");
 
 router.post("/signup", validate(registerSchema), ctrl.register);
 
@@ -21,5 +23,9 @@ router.get("/logout", authMiddleware, ctrl.logout);
 router.get("/current", authMiddleware, ctrl.getCurrent);
 
 router.patch("/avatars", authMiddleware, upload.single("avatar"), updateAvatar);
+
+router.get("/verify/:verificationToken", verifyEmail);
+
+router.post("/verify", resendVerificationEmail);
 
 module.exports = router;
