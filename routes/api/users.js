@@ -9,6 +9,9 @@ const {
 } = require("../../middlewares/validation");
 const authMiddleware = require("../../middlewares/auth");
 
+const upload = require("../../middlewares/upload");
+const { updateAvatar } = require("../../controllers/users");
+
 router.post("/signup", validate(registerSchema), ctrl.register);
 
 router.post("/login", validate(loginSchema), ctrl.login);
@@ -16,5 +19,7 @@ router.post("/login", validate(loginSchema), ctrl.login);
 router.get("/logout", authMiddleware, ctrl.logout);
 
 router.get("/current", authMiddleware, ctrl.getCurrent);
+
+router.patch("/avatars", authMiddleware, upload.single("avatar"), updateAvatar);
 
 module.exports = router;
